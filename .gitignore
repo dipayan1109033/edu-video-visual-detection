@@ -1,0 +1,27 @@
+# Virtual environments
+venv310/
+
+# Scripts for calculating object detection metrics
+src/utils/calculate_ODmetrics/
+
+# Data and Directories 
+data/
+experiments/
+results/
+
+
+# Checkpoints and model weights
+# *.ckpt
+# *.pth
+# *.pt
+# *.h5
+yolo*.pt
+
+
+
+# System files
+.DS_Store
+Thumbs.db
+__pycache__/
+.vscode/
+.idea/

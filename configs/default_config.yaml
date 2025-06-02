@@ -1,0 +1,89 @@
+# Config composition
+defaults:
+  - _self_
+  - experiment
+  - override hydra/job_logging: disabled  
+  - override hydra/hydra_logging: disabled
+
+
+# Experiment Configuration
+exp:  
+  seed: 42                        # Random seed for reproducibility
+  number: 0                       # Incremental experiment number for references (Required for testing)
+  device: cpu                     # Device to use for training/inference. Options: ['cpu', 'mps', 'cuda']
+  on_server: false                # Set to true if running on a server
+  mode: train                     # Mode of operation. Options: ['train', 'crossval', 'test', 'predict']
+  name: default                   # Custom experiment name for logging/saving
+  save_name: null                 # Experiemnt (model/prediction) files save name
+
+# Dataset Configuration
+data:
+  folder: sample_dataset          # Dataset folder name
+  root_dir:                       # Root directory for datasets
+    local: '/Volumes/Works/Projects/LV-ImageDetectDL/data/processed'
+    server: '/project/subhlok/dipayan/dataset/object_detection'
+  num_classes: 2                  # Total number of classes, (including background for torchvision models)
+
+  # Dataset partitions
+  split_ratios: [0.8, 0.2, 0.0]   # Train, validation, and test split ratios
+  split_code: null                # Custom split code (str) for referencing meta filenames using '{folder}_{split_code}.json'
+  custom_splits_dir: ${path.input_dir}/custom_splits  # Directory for custom splits metafiles
+  test_split: val                 # Partition to evaluate performance: ['val', 'test']
+
+  # Cross-validation
+  num_folds: 3                    # Number of folds for cross-validation
+  use_replacement: false          # Use replacement in cross-validation sampling
+
+  # Augmentation
+  use_augmentation: false         # Apply data augmentation
+  augment_factor: 1.0             # Augmentation expansion factor
+
+
+# Model Configuration
+model:
+  identifier: null                # Model type/identifier. Options: ['yolo', 'rcnn', 'maskRCNN', 'fcos', 'retinanet', 'ssd']
+  code: 0                         # Optional model code for torchvision models. Like 30, 31, 33, 35, etc
+  pretrained_model: null          # Path to pretrained model
+  saved_model_folder: null        # Save folder name for a previously trained model 
+  nms_threshold: 0.3              # nms threshold for torchvision models
+
+
+# Training Configuration
+train:
+  epoch: 2                        # Number of epochs
+  batch_size: 8                   # Samples per batch
+  optimizer: SGD                  # Optimization algorithm
+  lr: 0.001                       # Initial learning rate
+  momentum: 0.9                   # Momentum for SGD
+  weight_decay: 0.0005            # Weight decay (L2 regularization)
+  save_interval: 10               # Model save interval
+  deterministic: false            # Set to true for deterministic training
+  freeze_layers: 0                # Number of layers to freeze
+
+  # Learning Rate Scheduler
+  scheduler:                   
+    type: StepLR                  # Scheduler type. Options: ["StepLR", "ExponentialLR", "ReduceLROnPlateau", "OneCycleLR"]
+    step_size: 5                  # Epochs between learning rate adjustments (StepLR)
+    gamma: 0.25                   # LR decay factor (StepLR/ExponentialLR)
+    factor: 0.25                  # LR reduction factor (ReduceLROnPlateau)
+    patience: 3                   # Patience for ReduceLROnPlateau
+
+
+# Paths Configuration
+path:
+  project_root_dir:                                         # Root directory for the project
+    local: '/Volumes/Works/Projects/LV-ImageDetectDL'
+    server: '/project/subhlok/dipayan/LV-ImageDetectDL'
+  input_dir: experiments/input                              # Input root directory
+  output_dir: experiments/output/${model.identifier}        # Output root directory for each model
+  predict_image_folder: null                                # Folder with images for predictions
+  temp_dataset_path: null
+
+
+# hydra Configuration
+hydra:
+  run:
+    dir: .            # Run in current directory
+  output_subdir: null  # Prevents creation of output directory
+  job:
+    chdir: false      # Prevents changing working directory

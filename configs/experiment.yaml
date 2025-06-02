@@ -1,0 +1,46 @@
+
+# Experiment Configuration
+exp:  
+  seed: 42                        # Random seed for reproducibility
+  mode: crossval                     # Mode of operation. Options: ['train', 'crossval', 'test', 'predict']
+  name: default                   # Custom experiment name for logging/saving
+  number: 0                       # Incremental experiment number for references (Required for testing)
+
+
+# Dataset Configuration
+data:
+  folder: testdata_1kcns          # Dataset folder name
+
+  # Dataset partitions
+  split_ratios: [0.8, 0.2, 0.0]   # Train, validation, and test split ratios
+  test_split: val                 # Partition to evaluate performance: ['val', 'test']
+  split_code: null                # Custom split code (str) for referencing meta filenames using '{folder}_{split_code}.json'
+
+  # Cross-validation
+  num_folds: 5                    # Number of folds for cross-validation
+  use_replacement: false          # Use replacement in cross-validation sampling
+
+
+# Model Configuration
+model:
+  identifier: yolo                 # Model type/identifier. Options: ['yolo', 'rcnn', 'maskRCNN', 'fcos', 'retinanet', 'ssd']
+  code: 33                         # Optional model code for torchvision models. Like 30, 31, 33, 35, etc
+  pretrained_model: yolo11m.pt     # Path to pretrained model
+
+
+# Training Configuration
+train:
+  epoch: 2                        # Number of epochs
+  batch_size: 8                   # Samples per batch
+  lr: 0.001                       # Initial learning rate
+  save_interval: -1               # Model save interval
+  deterministic: false            # Set to true for deterministic training
+  freeze_layers: 0                # Number of layers to freeze
+
+
+# Paths Configuration
+path:
+  predict_image_folder: null                                # Folder with images for predictions
+  output_dir: experiments/output/${model.identifier}        # Output root directory for each model
+
+

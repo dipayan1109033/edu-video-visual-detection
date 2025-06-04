@@ -2,19 +2,20 @@
 # Experiment Configuration
 exp:  
   seed: 42                        # Random seed for reproducibility
-  mode: crossval                     # Mode of operation. Options: ['train', 'crossval', 'test', 'predict']
+  number: 0                       # Incremental experiment number for references (Required for testing)  
+  mode: train                     # Mode of operation. Options: ['train', 'crossval', 'test', 'predict']
   name: default                   # Custom experiment name for logging/saving
-  number: 0                       # Incremental experiment number for references (Required for testing)
 
 
 # Dataset Configuration
 data:
-  folder: testdata_1kcns          # Dataset folder name
+  folder: LVVO_1k                 # Dataset folder name
 
   # Dataset partitions
   split_ratios: [0.8, 0.2, 0.0]   # Train, validation, and test split ratios
+  split_code: LVVO_1k_10p_80_20_seed42                # Custom split code (str) for referencing meta filenames using '{split_code}.json'
   test_split: val                 # Partition to evaluate performance: ['val', 'test']
-  split_code: null                # Custom split code (str) for referencing meta filenames using '{folder}_{split_code}.json'
+
 
   # Cross-validation
   num_folds: 5                    # Number of folds for cross-validation
@@ -26,6 +27,7 @@ model:
   identifier: yolo                 # Model type/identifier. Options: ['yolo', 'rcnn', 'maskRCNN', 'fcos', 'retinanet', 'ssd']
   code: 33                         # Optional model code for torchvision models. Like 30, 31, 33, 35, etc
   pretrained_model: yolo11m.pt     # Path to pretrained model
+  saved_model_folder: null        # Save folder name for a previously trained model 
 
 
 # Training Configuration

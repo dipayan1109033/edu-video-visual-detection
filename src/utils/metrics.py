@@ -416,18 +416,17 @@ def evaluate_model_crossval():
 def evaluate_model():
     model_name = "yolo"     # "yolo", "rcnn", "classic_alg"
     
-    for dataset_name in ["testdata_1k"]:
-    #for dataset_name in ["testdata_215", "testdata_1k", "ldd_vdataset", "lpm_dataset"]:
+    dataset_name = "LVVO_1k"
 
-        json_filename = f"train5_rs42_YOLOv8_SGD_b8_e50_lr0.001__{dataset_name}.json"
-        prediction_json_path = f"output/{model_name}/model_predictions/{json_filename}"
+    json_filename = f"train5_rs42_YOLOv8_SGD_b8_e50_lr0.001__{dataset_name}.json"
+    prediction_json_path = f"output/{model_name}/model_predictions/{json_filename}"
 
-        evalObj = Evaluation_withCOCO(prediction_json_path, score_threshold=0.5)
-        evalObj.compute(model_name, saveToCSV=True)
-        
-        evalObj.filter_coco_predictions(score_threshold=0.0)
-        evalObj.compute(model_name, saveToCSV=True)
-        evalObj.draw_bounding_boxes(save_folder=model_name, postfix="yolo")
+    evalObj = Evaluation_withCOCO(prediction_json_path, score_threshold=0.5)
+    evalObj.compute(model_name, saveToCSV=True)
+    
+    evalObj.filter_coco_predictions(score_threshold=0.0)
+    evalObj.compute(model_name, saveToCSV=True)
+    evalObj.draw_bounding_boxes(save_folder=model_name, postfix="yolo")
 
 
 
@@ -436,8 +435,8 @@ if __name__ == "__main__":
     helper = Helper()
 
     
-    #evaluate_model()
-    evaluate_model_crossval()
+    evaluate_model()
+    #evaluate_model_crossval()
 
     
 

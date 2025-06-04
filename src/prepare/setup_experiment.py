@@ -162,67 +162,61 @@ def create_crossval_experiment_metadata(root_dir, datasets, metadata_folder, des
 
 
 
-def run_dataset_splitter(root_datasets_dir):
+def run_dataset_splitter(datasets_root_dir):
     """Function to execute dataset partitioning and metadata generation."""
     metadata_folder = "experiments/input/custom_splits"
     
     datasets = {
-        "testdata_1kcns": {
-            "percentage": 100,
-            "split_ratio": {"train": 0.70, "val": 0.10, "test": 0.20},
+        "LVVO_1k": {
+            "percentage": 100,  # Use 100% of the dataset
+            "split_ratio": {"train": 0.80, "val": 0.20, "test": 0.0},
             "label_folder": "labels"
         },
-        "ldd_dataset": {
-            "percentage": 100,
-            "split_ratio": {"train": 0.70, "val": 0.10, "test": 0.20},
-            "label_folder": "labels"
-        },
-        "lpm_dataset": {
-            "percentage": 100,
-            "split_ratio": {"train": 0.70, "val": 0.10, "test": 0.20},
-            "label_folder": "labels"
-        }
+        # "ldd_dataset": {
+        #     "percentage": 100,
+        #     "split_ratio": {"train": 0.80, "val": 0.20, "test": 0.0},
+        #     "label_folder": "labels"
+        # },
+        # "lpm_dataset": {
+        #     "percentage": 100,
+        #     "split_ratio": {"train": 0.80, "val": 0.20, "test": 0.0},
+        #     "label_folder": "labels"
+        # }
     }
-    destination_folder = "1k_ldd_lpm_70_10_20_seed42"
-    metadata_file_path = create_experiment_metadata(root_datasets_dir, datasets, metadata_folder, destination_folder, seed=42)
+    destination_folder = "LVVO_1k_100p_80_20_seed42"
+    metadata_file_path = create_experiment_metadata(datasets_root_dir, datasets, metadata_folder, destination_folder, seed=42)
     print(f"Metadata JSON file created: {metadata_file_path}")
 
-def run_crossval_dataset_splitter(root_datasets_dir):
+def run_crossval_dataset_splitter(datasets_root_dir):
     """Function to execute cross-validation dataset partitioning and metadata generation."""
     metadata_folder = "experiments/input/custom_splits"
     
     datasets = {
-        "testdata_1kcns": {
+        "LVVO_1k": {
             "percentage": 100,
             "cross_val": True,
             "split_ratio": None,
             "label_folder": "labels"
         },
-        "testdata_3k_auto": {
+        "LVVO_3k": {
             "percentage": 100,
             "cross_val": False,
             "split_ratio": {"train": 100.0, "val": 0.0},
-            "label_folder": "labels_th0.5"
+            "label_folder": "labels"
         }
     }
-    destination_folder = "td4k4_th0.5_v200_cv5_seed42"
-    metadata_file_path = create_crossval_experiment_metadata(root_datasets_dir, datasets, metadata_folder, destination_folder, num_folds=5, seed=42)
+    destination_folder = "LVVO_4k_val200_cv5_seed42"
+    metadata_file_path = create_crossval_experiment_metadata(datasets_root_dir, datasets, metadata_folder, destination_folder, num_folds=5, seed=42)
     print(f"Cross-validation metadata JSON file created: {metadata_file_path}")
 
 
 
-def main():
-    root_datasets_dir = "data/processed"
-    root_datasets_dir = "/project/subhlok/dipayan/dataset/object_detection"
 
-    # Make sure all datasets have same categories and unique image ids in the dataset_info.json files
-    run_dataset_splitter(root_datasets_dir)
-    #run_crossval_dataset_splitter(root_datasets_dir)
-
-
-
-
-
+# dataset folders: LVVO_1k_withCategories, LVVO_1k, LVVO_3k, ldd_vdataset, lpm_dataset
 if __name__ == "__main__":
     helper = Helper()
-    main()
+    datasets_root_dir = "data/processed"
+
+    # Make sure all datasets have same categories ids and unique image ids in the dataset_info.json files
+    run_dataset_splitter(datasets_root_dir)
+    #run_crossval_dataset_splitter(datasets_root_dir)

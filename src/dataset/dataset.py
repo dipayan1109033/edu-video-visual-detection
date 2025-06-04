@@ -163,26 +163,5 @@ def plot_sample_images_from_dataset(torch_dataset, num_images = 2):
     plt.show()
 
 
-def main():
-    # Required parameters
-    temp_dataset_dir = "experiments/input/temp_datasets/testdata_1k_80_20_0_seed42"
-
-    train_folder_path = os.path.join(temp_dataset_dir, "train")
-    dataset = LectureFrameODDataset(train_folder_path, transformFlag=False)
-    print(f"Total samples in dataset: {len(dataset)}")
-
-    plot_sample_images_from_dataset(dataset, 2)
-
-
-    # Get a sample item
-    image, label_dict = dataset[0]
-    print(f"Image shape: {image.shape}, Image type: {image.dtype}")
-    print(f"Boxes: {label_dict['boxes']}, Labels: {label_dict['labels']}")
-
-
-if __name__ == "__main__":
-    print("In src/data/dataset.py main()")
-    main()
-
 
 

@@ -245,19 +245,19 @@ def check_objects_classes(dataset_path):
     print(f"Classes: {classes}")
     return classes
 
-def update_objects_classes(dataset_path, class_mappping= None):
+def update_objects_classes(dataset_path, class_mapping= None):
     labelfolder_path = os.path.join(dataset_path, "labels")
     label_filelist = helper.get_files_with_extension(labelfolder_path, extension=".json")
 
-    if not class_mappping:
-        raise ValueError(f"'class_mappping' is required to update class labels.")
+    if not class_mapping:
+        raise ValueError(f"'class_mapping' is required to update class labels.")
 
     for json_file in label_filelist:
         json_filepath = os.path.join(labelfolder_path, json_file)
 
         data = helper.read_from_json(json_filepath)
         for object in data["objects"]:
-            object["class"] = class_mappping[object["class"]]
+            object["class"] = class_mapping[object["class"]]
 
         helper.write_to_json(data, json_filepath)
 

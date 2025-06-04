@@ -8,113 +8,21 @@ from src.utils.common import Helper
 
 
 
-def checking_aCustom_dataset(dataset_root_path, dataset_folder, mapping=None):
+
+def checking_custom_dataset(dataset_root_path, dataset_folder):
     dataset_path = os.path.join(dataset_root_path, dataset_folder)
 
     check_bbox_coordinates(dataset_path, fixFlag=False)
 
-    #check_images_withoutBBox(dataset_path)
+    check_images_withoutBBox(dataset_path)
 
-    #draw_bboxes_over_images(dataset_path)
+    draw_bboxes_over_images(dataset_path)
 
     check_objects_classes(dataset_path)
-    if mapping: update_objects_classes(dataset_path, class_mappping=mapping)
-
-
-def checking_dataset():
-    dataset_root_path = "data/raw/"
-    
-    # dataset folders: sample_dataset, testdata_215, testdata_738, testdata_1k, testdata_3k3, testdata_1kcns
-    # dataset folders: ldd_vdataset, lpm_dataset, lpm_vdataset
-
-    dataset_folder = "lpm_vdataset"
-    checking_aCustom_dataset(dataset_root_path, dataset_folder)
 
 
 
 
-
-
-def get_image_ids(dataset_path):
-    labelfolder_path = os.path.join(dataset_path, "labels")
-    label_filelist = helper.get_files_with_extension(labelfolder_path, extension=".json")
-
-    image_ids = []
-    for json_file in label_filelist:
-        json_filepath = os.path.join(labelfolder_path, json_file)
-
-        data = helper.read_from_json(json_filepath)
-        image_id = data['asset']['image_id']
-        image_ids.append(image_id)
-    return image_ids
-
-def create_datasets_image_ids_json(dataset_root_path, dataset_folders, skip_old=False):
-    # Read dataset_image_ids info file (create one if not exist)
-    json_filepath = os.path.join(dataset_root_path, "temp", "datasets_image_ids.json")
-    if os.path.exists(json_filepath) and not skip_old:
-        datasets_info = helper.read_from_json(json_filepath)
-    else:
-        datasets_info = {'dataset_list': [], 'max_image_id': 0}
-
-    # Add (if not exist) or Modify image ids info for the provided datasets
-    for dataset_name in dataset_folders:
-        if dataset_name not in datasets_info['dataset_list']:
-            datasets_info['dataset_list'].append(dataset_name)
-
-        dataset_path = os.path.join(dataset_root_path, dataset_name)
-        image_ids = get_image_ids(dataset_path)
-        datasets_info[dataset_name] = {
-                                        'name': dataset_name, 
-                                        'start_image_id': min(image_ids), 
-                                        'end_image_id': max(image_ids), 
-                                        'count': len(image_ids),
-                                        'update': False
-                                        }
-
-    datasets_info['max_image_id'] = max([datasets_info[dataset_folder]['end_image_id'] for dataset_folder in datasets_info['dataset_list']])
-    helper.write_to_json(datasets_info, json_filepath)
-
-def update_adataset_image_ids(dataset_root_path, dataset_folder = "sample_dataset", start_image_id=None):
-    dataset_path = os.path.join(dataset_root_path, dataset_folder)
-
-    # Read the datasets_imageids info and initialize start_image_id
-    info_filepath = os.path.join(dataset_root_path, "temp", "datasets_image_ids.json")
-    datasets_info = helper.read_from_json(info_filepath)
-    if start_image_id is None:
-        start_image_id = datasets_info['max_image_id'] + 1
-
-    # Check if it is allowed to update the image_ids for the provided dataset
-    if dataset_folder not in datasets_info['dataset_list']:
-        datasets_info['dataset_list'].append(dataset_folder)
-    else:
-        if not datasets_info[dataset_folder]['update']:
-            print(f"Dataset '{dataset_folder}' already exist in datasets_image_ids info file and it's update is restricted")
-            return
-
-    # Actual update of image ids
-    labelfolder_path = os.path.join(dataset_path, "labels")
-    label_filelist = sorted(helper.get_files_with_extension(labelfolder_path, extension=".json"))
-    for json_file in label_filelist:
-        json_filepath = os.path.join(labelfolder_path, json_file)
-
-        data = helper.read_from_json(json_filepath)
-        data['asset']['image_id'] = start_image_id
-        start_image_id += 1
-        helper.write_to_json(data, json_filepath)
-
-    # Update the datasets_imageids info json file
-    image_ids = get_image_ids(dataset_path)
-    datasets_info[dataset_folder] = {
-                                    'name': dataset_folder, 
-                                    'start_image_id': min(image_ids), 
-                                    'end_image_id': max(image_ids), 
-                                    'count': len(image_ids),
-                                    'update': False
-                                    }
-    datasets_info['max_image_id'] = max([datasets_info[dataset_folder]['end_image_id'] for dataset_folder in datasets_info['dataset_list']])
-    helper.write_to_json(datasets_info, info_filepath)
-    print(f"Image ids update to '{dataset_folder}' is successfull.")
-    
 def print_dataset_stats(dataset_path):
     labels_folder_path = os.path.join(dataset_path, "labels")
     json_files = helper.get_files_with_extension(labels_folder_path, extension="json")
@@ -160,26 +68,14 @@ def print_dataset_stats(dataset_path):
     objects_category_counts = dict(sorted(objects_category_counts.items(), key=lambda item: item[1], reverse=True))
     print(f"	{objects_category_counts}")
 
-
-def monitor_datasets_info():
-    dataset_root_path = "data/raw/"
-
-    # dataset folders: sample_dataset, testdata_215, testdata_738, testdata_1k, testdata_3k3, testdata_1kcns
-    # dataset folders: ldd_dataset, lpm_dataset, lpm_vdataset
-
-
-    dataset_folders = ['ldd_dataset', 'testdata_215']
-    #create_datasets_image_ids_json(dataset_root_path, dataset_folders)
-
-    
-    dataset_folder = "testdata_1kcns"
-    #update_adataset_image_ids(dataset_root_path, dataset_folder)
-
-    for dataset_folder in ["ldd_vdataset", "lpm_dataset", "testdata_1kcns", "testdata_3k3cns"]:
+def print_datasets_info():
+    # LVVO_1k_withCategories, LVVO_1k, LVVO_3k, ldd_dataset, lpm_dataset
+    for dataset_folder in ["LVVO_1k_withCategories", "LVVO_1k", "LVVO_3k", "ldd_dataset", "lpm_dataset"]:
         print("\nFor dataset:", dataset_folder)
         dataset_path = os.path.join(dataset_root_path, dataset_folder)
         print_dataset_stats(dataset_path)
         #break
+
 
 
 
@@ -215,38 +111,27 @@ def process_dataset(dataset_path, output_root_dir, output_folder=None, singleCla
 
     create_dataset_info(output_root_dir, output_folder, singleClass=singleClass, label_dict=label_dict)
 
-
-
-
-
-
-# For multiple classes detection
-label_dict = {"Table": 1, "Chart-Graph": 2, "Photographic-image": 3, "Visual-illustration": 4}
-
-
 def prepare_dataset():
-    dataset_root_path = "data/raw/"
-    output_root_dir = "data/processed/"
+    input_root_dir = "data/raw/"
 
-    # dataset folders: sample_dataset, testdata_215, testdata_738, testdata_1k, testdata_3k3, testdata_1kcns, testdata_3k3cns
-    # dataset folders: ldd_vdataset, lpm_dataset, lpm_vdataset, td4k_auto0.4, td4k_auto0.5
-
-    dataset_path = os.path.join(dataset_root_path, "testdata_1kcns")
-    output_folder = "testdata_1kcns_4classes"
-    #check_objects_classes(dataset_path)
-
+    # Covert raw dataset class names to class IDs and save into the processed folder
+    dataset_path = os.path.join(input_root_dir, "LVVO_1k_withCategories")
     label_dict = {"Table": 1, "Chart-Graph": 2, "Photographic-image": 3, "Visual-illustration": 4}
-    process_dataset(dataset_path, output_root_dir, output_folder, singleClass=False, label_dict=label_dict)
 
-    dataset_folder = "td4k_auto0.5"
-    #create_dataset_info(output_root_dir, dataset_folder, singleClass=True)
+    output_folder = "LVVO_1k_withCategories"
+    process_dataset(dataset_path, dataset_root_path, output_folder, singleClass=False, label_dict=label_dict)
 
-    # dataset_path = os.path.join(output_root_dir, output_folder)
-    # check_objects_classes(dataset_path)
+
+    # # Create dataset info file for the processed dataset
+    # dataset_folder = "LVVO_1k_withCategories"
+    # create_dataset_info(dataset_root_path, dataset_folder, singleClass=True)
+
+
 
 
 def filter_labels_by_score(input_folder, output_folder, threshold=0.5):
     # output labels folder
+    dataset_path = helper.get_immediate_folder_path(input_folder)
     output_labels_path = os.path.join(dataset_path, output_folder)
     os.makedirs(output_labels_path, exist_ok=True)
 
@@ -265,7 +150,6 @@ def filter_labels_by_score(input_folder, output_folder, threshold=0.5):
         new_label_filepath = os.path.join(output_labels_path, label_file)
         data['objects'] = box_list
         helper.write_to_json(data, new_label_filepath)
-
 
 def create_score_thresholded_dataset(dataset_path, label_folder, output_folder, lThreshold=0.5, uThreshold=1.0, copy_images=True):
     # input folders
@@ -300,36 +184,37 @@ def create_score_thresholded_dataset(dataset_path, label_folder, output_folder, 
             image_path = os.path.join(input_image_folder, image_file)
             shutil.copy(image_path, output_image_folder)
 
-
 def prepare_autolabel_dataset(dataset_path):
-    dataset_root_path = "data/raw/testdata_3k3cns"
     
-    #check_objects_classes(dataset_path)
+    # Filter predicted labels by score and create a new dataset
+    input_labels_folder = os.path.join(dataset_path, "labels")
+    #filter_labels_by_score(input_labels_folder, output_folder="labels2", threshold=0.50)
 
-    #input_folder = os.path.join(dataset_path, "labels")
-    #filter_labels_by_score(input_folder, output_folder="labels2", threshold=0.25)
-    create_score_thresholded_dataset(dataset_path, label_folder="labels28", output_folder="thresholdedDataset28_0.5Up", lThreshold=0.50, uThreshold=1.0)
+    output_folder="ThDataset2_0.5Up"
+    create_score_thresholded_dataset(dataset_path, label_folder="labels2", output_folder=output_folder, lThreshold=0.50, uThreshold=1.0)
 
-    dataset_path = os.path.join(dataset_path, "thresholdedDataset_0.5Up")
-    #draw_bboxes_over_images(dataset_path)
-
-
+    dataset_path = os.path.join(dataset_path, output_folder)
+    draw_bboxes_over_images(dataset_path)
 
 
 
 
 if __name__ == "__main__":
     helper = Helper()
+    dataset_root_path = "data/processed"
+    # dataset folders: LVVO_1k_withCategories, LVVO_1k, LVVO_3k, ldd_vdataset, lpm_dataset
+
 
     # Check and update for inconsistency within the dataset
-    #checking_dataset()
+    dataset_folder = "LVVO_1k_withCategories"
+    checking_custom_dataset(dataset_root_path, dataset_folder)
 
-    # Monitor and update datasets info in relation to other datasets 
-    monitor_datasets_info()
+    # # Print datasets stats 
+    # print_datasets_info()
 
-    # Prepare dataset for experiments
-    #prepare_dataset()
+    # # Prepare dataset for experiments
+    # prepare_dataset()
 
 
-    dataset_path = "data/raw/testdata_3k3cns"
-    #prepare_autolabel_dataset(dataset_path)
+    # dataset_path = "data/raw/LVVO_3k"
+    # prepare_autolabel_dataset(dataset_path)

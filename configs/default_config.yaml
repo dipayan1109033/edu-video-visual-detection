@@ -11,27 +11,24 @@ exp:
   seed: 42                        # Random seed for reproducibility
   number: 0                       # Incremental experiment number for references (Required for testing)
   device: cpu                     # Device to use for training/inference. Options: ['cpu', 'mps', 'cuda']
-  on_server: false                # Set to true if running on a server
   mode: train                     # Mode of operation. Options: ['train', 'crossval', 'test', 'predict']
   name: default                   # Custom experiment name for logging/saving
   save_name: null                 # Experiemnt (model/prediction) files save name
 
 # Dataset Configuration
 data:
-  folder: sample_dataset          # Dataset folder name
-  root_dir:                       # Root directory for datasets
-    local: '/Volumes/Works/Projects/LV-ImageDetectDL/data/processed'
-    server: '/project/subhlok/dipayan/dataset/object_detection'
+  folder: LVVO_1k                 # Dataset folder name
+  root_dir: data/processed        # Root directory for datasets (default: ./data/processed)
   num_classes: 2                  # Total number of classes, (including background for torchvision models)
 
   # Dataset partitions
   split_ratios: [0.8, 0.2, 0.0]   # Train, validation, and test split ratios
-  split_code: null                # Custom split code (str) for referencing meta filenames using '{folder}_{split_code}.json'
+  split_code: null                # Custom split code (str) for referencing meta filenames using '{split_code}.json'
   custom_splits_dir: ${path.input_dir}/custom_splits  # Directory for custom splits metafiles
   test_split: val                 # Partition to evaluate performance: ['val', 'test']
 
   # Cross-validation
-  num_folds: 3                    # Number of folds for cross-validation
+  num_folds: 5                    # Number of folds for cross-validation
   use_replacement: false          # Use replacement in cross-validation sampling
 
   # Augmentation
@@ -56,7 +53,7 @@ train:
   lr: 0.001                       # Initial learning rate
   momentum: 0.9                   # Momentum for SGD
   weight_decay: 0.0005            # Weight decay (L2 regularization)
-  save_interval: 10               # Model save interval
+  save_interval: -1               # Model save interval
   deterministic: false            # Set to true for deterministic training
   freeze_layers: 0                # Number of layers to freeze
 
@@ -71,9 +68,7 @@ train:
 
 # Paths Configuration
 path:
-  project_root_dir:                                         # Root directory for the project
-    local: '/Volumes/Works/Projects/LV-ImageDetectDL'
-    server: '/project/subhlok/dipayan/LV-ImageDetectDL'
+  project_root_dir: null                                    # Root directory for the project (default: one level up from src/main.py)
   input_dir: experiments/input                              # Input root directory
   output_dir: experiments/output/${model.identifier}        # Output root directory for each model
   predict_image_folder: null                                # Folder with images for predictions
@@ -83,7 +78,7 @@ path:
 # hydra Configuration
 hydra:
   run:
-    dir: .            # Run in current directory
+    dir: .             # Run in current directory
   output_subdir: null  # Prevents creation of output directory
   job:
-    chdir: false      # Prevents changing working directory
+    chdir: false       # Prevents changing working directory

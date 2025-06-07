@@ -1,5 +1,5 @@
 # Virtual environments
-venv310/
+venv3*/*
 
 # Scripts for calculating object detection metrics
 src/utils/calculate_ODmetrics/

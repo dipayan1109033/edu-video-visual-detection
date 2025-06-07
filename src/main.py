@@ -113,7 +113,7 @@ def main(config: DictConfig):
 
     if cfg.model.identifier == "yolo":
         yolo_model.main(cfg)
-    elif cfg.model.identifier in ['yolo', 'rcnn', 'maskRCNN', 'fcos', 'retinanet', 'ssd']:
+    elif cfg.model.identifier.lower() in ['yolo', 'rcnn', 'maskrcnn', 'fcos', 'retinanet', 'ssd']:
         tvdetection_models.main(cfg)
     else:
         raise ValueError(f"The model identifier '{cfg.model.identifier}' is invalid.")

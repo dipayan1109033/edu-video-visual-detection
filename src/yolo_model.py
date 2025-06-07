@@ -281,15 +281,11 @@ def test_model(cfg):
 
 
 
-def misc(cfg):
-    pass
-
-
-
 
 def main(cfg):
     # Set random seeds for this process
     set_seeds(cfg.exp.seed)
+    cfg.exp.device = check_for_cuda_device(cfg.exp.device)
 
     # Get output folder number for the experiemnt
     if cfg.exp.mode == 'train':
@@ -309,4 +305,4 @@ def main(cfg):
     elif cfg.exp.mode == "predict":
         predict_using_model(cfg, batch_size = 10)
     else:
-        misc(cfg)
+        raise ValueError(f"Unsupported experiment mode: {cfg.exp.mode}. Supported modes are 'train', 'crossval', 'test', and 'predict'.")

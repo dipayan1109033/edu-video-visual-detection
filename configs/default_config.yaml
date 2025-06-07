@@ -10,7 +10,7 @@ defaults:
 exp:  
   seed: 42                        # Random seed for reproducibility
   number: 0                       # Incremental experiment number for references (Required for testing)
-  device: cpu                     # Device to use for training/inference. Options: ['cpu', 'mps', 'cuda']
+  device: cpu                     # Preferred device ('cpu', 'mps', or 'cuda'). If 'cuda' is available, it will be used automatically.
   mode: train                     # Mode of operation. Options: ['train', 'crossval', 'test', 'predict']
   name: default                   # Custom experiment name for logging/saving
   save_name: null                 # Experiemnt (model/prediction) files save name
@@ -38,7 +38,7 @@ data:
 
 # Model Configuration
 model:
-  identifier: null                # Model type/identifier. Options: ['yolo', 'rcnn', 'maskRCNN', 'fcos', 'retinanet', 'ssd']
+  identifier: null                # Model type/identifier. Options: ['yolo', 'rcnn', 'maskrcnn', 'fcos', 'retinanet', 'ssd']
   code: 0                         # Optional model code for torchvision models. Like 30, 31, 33, 35, etc
   pretrained_model: null          # Path to pretrained model
   saved_model_folder: null        # Save folder name for a previously trained model 

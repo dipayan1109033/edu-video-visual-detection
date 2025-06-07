@@ -186,9 +186,10 @@ def get_fcos_model(model_code=33, num_classes=2):
     return model
 
 def get_pytorch_model(model_identifier, model_code=33, num_classes=2):
+    model_identifier = model_identifier.lower()
     if model_identifier == "rcnn":
         model = get_faster_rcnn_model(model_code = model_code, num_classes = num_classes)
-    elif model_identifier == "maskRCNN":
+    elif model_identifier == "maskrcnn":
         model = get_mask_rcnn_model(model_code = model_code, num_classes = num_classes)
     elif model_identifier == "fcos":
         model = get_fcos_model(model_code = model_code, num_classes = num_classes)
@@ -197,7 +198,7 @@ def get_pytorch_model(model_identifier, model_code=33, num_classes=2):
     elif model_identifier == "ssd":
         model = get_ssd300_model(model_code = model_code, num_classes = num_classes)
     else:
-        print("Please choose a model name from 'rcnn', 'maskRCNN', 'fcos', 'retinanet', 'ssd' ")
+        print("Please choose a model name from 'rcnn', 'maskrcnn', 'fcos', 'retinanet', 'ssd' ")
     return model
 
 

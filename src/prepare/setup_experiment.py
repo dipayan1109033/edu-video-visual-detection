@@ -10,14 +10,14 @@ from src.utils.common import Helper
 
 
 
-def create_experiment_metadata(root_dir, datasets, metadata_folder, destination_folder, seed=42):
+def create_experiment_metadata(root_dir, datasets, metadata_folder, custom_split_code, seed=42):
     """Generates metadata for dataset partitions and saves it as a JSON file.
     
     Args:
         root_dir (str): Root directory containing dataset folders.
         datasets (dict): Dictionary containing dataset configurations.
         metadata_folder (str): Directory to save the metadata file.
-        destination_folder (str): Name of the destination folder where processed data will be stored.
+        custom_split_code (str): Custom split code for referencing meta filenames.
         seed (int): Random seed used for reproducibility.
 
     Returns:
@@ -25,7 +25,7 @@ def create_experiment_metadata(root_dir, datasets, metadata_folder, destination_
     """
     random.seed(seed)
     metadata = {
-        "destination_folder": destination_folder,
+        "destination_folder": custom_split_code,
         "datasets": datasets,
         "seed": seed,
         "split_data": {}
@@ -68,19 +68,19 @@ def create_experiment_metadata(root_dir, datasets, metadata_folder, destination_
         
     # Save to JSON file
     os.makedirs(metadata_folder, exist_ok=True)
-    metadata_file = os.path.join(metadata_folder, f"{destination_folder}.json")
+    metadata_file = os.path.join(metadata_folder, f"{custom_split_code}.json")
     helper.write_to_json(metadata, metadata_file)
 
     return metadata_file
 
-def create_crossval_experiment_metadata(root_dir, datasets, metadata_folder, destination_folder, num_folds=5, seed=42):
+def create_crossval_experiment_metadata(root_dir, datasets, metadata_folder, custom_split_code, num_folds=5, seed=42):
     """Generates metadata for cross-validation dataset partitions and saves it as a JSON file.
     
     Args:
         root_dir (str): Root directory containing dataset folders.
         datasets (dict): Dictionary containing dataset configurations.
         metadata_folder (str): Directory to save the metadata file.
-        destination_folder (str): Name of the destination folder where processed data will be stored.
+        custom_split_code (str): Custom split code for referencing meta filenames.
         num_folds (int): Number of folds for cross-validation.
         seed (int): Random seed used for reproducibility.
 
@@ -89,7 +89,7 @@ def create_crossval_experiment_metadata(root_dir, datasets, metadata_folder, des
     """
     random.seed(seed)
     metadata = {
-        "destination_folder": destination_folder,
+        "destination_folder": custom_split_code,
         "num_folds": num_folds,
         "datasets": datasets,
         "seed": seed,
@@ -155,7 +155,7 @@ def create_crossval_experiment_metadata(root_dir, datasets, metadata_folder, des
 
     # Save to JSON file
     os.makedirs(metadata_folder, exist_ok=True)
-    metadata_file = os.path.join(metadata_folder, f"{destination_folder}.json")
+    metadata_file = os.path.join(metadata_folder, f"{custom_split_code}.json")
     helper.write_to_json(metadata, metadata_file)
 
     return metadata_file
@@ -172,6 +172,11 @@ def run_dataset_splitter(datasets_root_dir):
             "split_ratio": {"train": 0.80, "val": 0.20, "test": 0.0},
             "label_folder": "labels"
         },
+        "LVVO_3k": {
+            "percentage": 100,
+            "split_ratio": {"train": 1.00, "val": 0.0, "test": 0.0},
+            "label_folder": "labels"
+        },
         # "ldd_dataset": {
         #     "percentage": 100,
         #     "split_ratio": {"train": 0.80, "val": 0.20, "test": 0.0},
@@ -183,8 +188,8 @@ def run_dataset_splitter(datasets_root_dir):
         #     "label_folder": "labels"
         # }
     }
-    destination_folder = "LVVO_1k_100p_80_20_seed42"
-    metadata_file_path = create_experiment_metadata(datasets_root_dir, datasets, metadata_folder, destination_folder, seed=42)
+    custom_split_code = "LVVO_4k_val200_seed42"     # Use this name to reference this splitted dataset for training
+    metadata_file_path = create_experiment_metadata(datasets_root_dir, datasets, metadata_folder, custom_split_code, seed=42)
     print(f"Metadata JSON file created: {metadata_file_path}")
 
 def run_crossval_dataset_splitter(datasets_root_dir):
@@ -205,8 +210,8 @@ def run_crossval_dataset_splitter(datasets_root_dir):
             "label_folder": "labels"
         }
     }
-    destination_folder = "LVVO_4k_val200_cv5_seed42"
-    metadata_file_path = create_crossval_experiment_metadata(datasets_root_dir, datasets, metadata_folder, destination_folder, num_folds=5, seed=42)
+    custom_split_code = "LVVO_4k_val200_cv5_seed42"     # Use this name to reference this splitted dataset for training
+    metadata_file_path = create_crossval_experiment_metadata(datasets_root_dir, datasets, metadata_folder, custom_split_code, num_folds=5, seed=42)
     print(f"Cross-validation metadata JSON file created: {metadata_file_path}")
 
 
@@ -219,4 +224,4 @@ if __name__ == "__main__":
 
     # Make sure all datasets have same categories ids and unique image ids in the dataset_info.json files
     run_dataset_splitter(datasets_root_dir)
-    #run_crossval_dataset_splitter(datasets_root_dir)
+    run_crossval_dataset_splitter(datasets_root_dir)

@@ -12,7 +12,7 @@ helper = Helper()
 
 
 
-def train_fasterrcnn(cfg, model, optimizer, train_loader, val_loader = None, save_root_dir=None, fold_tag=""):
+def train_torchvisionModel(cfg, model, optimizer, train_loader, val_loader = None, save_root_dir=None, fold_tag=""):
     # keys = ["loss_classifier", "loss_box_reg", "loss_objectness", "loss_rpn_box_reg"]   # FasterRCNN loss names.
     loss_dict = {'train_loss': [], 'valid_loss': [], 'smooth_train_loss': [], 'smooth_valid_loss': []}
 
@@ -52,7 +52,7 @@ def train_fasterrcnn(cfg, model, optimizer, train_loader, val_loader = None, sav
 
     return model
 
-def test_fasterrcnn(cfg, model, dataset_dir, dataset_folder, split, save_filename, fold_tag=""):
+def test_torchvisionModel(cfg, model, dataset_dir, dataset_folder, split, save_filename, fold_tag=""):
     device = torch.device(cfg.exp.device)
 
     # Validation dataset.
@@ -110,13 +110,14 @@ def crossvalidate_model(cfg):
 
         # Train the model over number of epochs
         save_root_dir = os.path.join(cfg.path.output_dir, "crossval", f"crossval{cfg.exp.number}", f"fold{fold_idx}")
-        model = train_fasterrcnn(cfg, model, optimizer, train_loader, val_loader, save_root_dir, fold_tag=f"fold{fold_idx}_")
+        model = train_torchvisionModel(cfg, model, optimizer, train_loader, val_loader, save_root_dir, fold_tag=f"fold{fold_idx}_")
         save_OmegaConfig(cfg, save_root_dir)
 
         # Validate the trained model
         save_filename = f"crossval{cfg.exp.number}_{cfg.exp.save_name}_fold{fold_idx}__{dataset_folder}.json"
-        predictions_filepath = test_fasterrcnn(cfg, model, dataset_dir, dataset_folder, split="val", save_filename=save_filename, fold_tag=f"fold{fold_idx}")
-        evaluate_predictions(cfg.data.root_dir, predictions_filepath, save_dir=cfg.path.output_dir, model_identifier=cfg.model.identifier, csvFlag=False)
+        predictions_filepath = test_torchvisionModel(cfg, model, dataset_dir, dataset_folder, split="val", save_filename=save_filename, fold_tag=f"fold{fold_idx}")
+        dataset_fold_dir = os.path.join(dataset_dir, f"fold{fold_idx}")
+        evaluate_predictions(dataset_fold_dir, 'val', predictions_filepath, save_dir=cfg.path.output_dir, model_identifier=cfg.model.identifier, csvFlag=False)
         predictions_filelist.append(predictions_filepath)
 
     evaluate_cv_predictions(predictions_filelist, save_dir=cfg.path.output_dir, model_identifier=cfg.model.identifier)
@@ -154,18 +155,13 @@ def train_model(cfg):
 
     # Train the model over number of epochs
     save_root_dir = os.path.join(cfg.path.output_dir, "train", f"train{cfg.exp.number}")
-    model = train_fasterrcnn(cfg, model, optimizer, train_loader, val_loader, save_root_dir)
+    model = train_torchvisionModel(cfg, model, optimizer, train_loader, val_loader, save_root_dir)
     save_OmegaConfig(cfg, save_root_dir)
 
     # Test the trained model
     save_filename = f"train{cfg.exp.number}_{cfg.exp.save_name}__{dataset_folder}.json"
-    predictions_filepath = test_fasterrcnn(cfg, model, dataset_dir, dataset_folder, split = "val", save_filename=save_filename)
-    evaluate_predictions(cfg.data.root_dir, predictions_filepath, save_dir=cfg.path.output_dir, model_identifier=cfg.model.identifier)
-
-    if False:
-        for dataset_folder, split in PathSettings.val_datasets:
-            val_ds_path = os.path.join(args.dataset_dir, dataset_folder)
-            test_fasterrcnn(args, model, val_ds_path, dataset_folder, split)
+    predictions_filepath = test_torchvisionModel(cfg, model, dataset_dir, dataset_folder, split = "val", save_filename=save_filename)
+    evaluate_predictions(dataset_dir, cfg.data.test_split, predictions_filepath, save_dir=cfg.path.output_dir, model_identifier=cfg.model.identifier)
 
 
 def test_model(cfg):
@@ -188,21 +184,8 @@ def test_model(cfg):
 
     # Test the trained model
     save_filename = f"train{cfg.exp.number}_{my_config.exp.save_name}__{dataset_folder}.json"
-    predictions_filepath = test_fasterrcnn(cfg, model, dataset_dir, dataset_folder, split = "val", save_filename=save_filename)
-    evaluate_predictions(cfg.data.root_dir, predictions_filepath, save_dir=cfg.path.output_dir, model_identifier=cfg.model.identifier)
-
-    if False:
-        for dataset_folder, split in PathSettings.val_datasets:
-            val_ds_path = os.path.join(args.dataset_dir, dataset_folder)
-            test_fasterrcnn(args, model, val_ds_path, dataset_folder, split)
-
-
-    
-
-def misc():
-    pass
-
-
+    predictions_filepath = test_torchvisionModel(cfg, model, dataset_dir, dataset_folder, split = "val", save_filename=save_filename)
+    evaluate_predictions(dataset_dir, cfg.data.test_split, predictions_filepath, save_dir=cfg.path.output_dir, model_identifier=cfg.model.identifier)
 
 
 
@@ -210,7 +193,6 @@ def misc():
 def main(cfg):
     # Set random seeds for this process
     set_seeds(cfg.exp.seed)
-    
     cfg.exp.device = check_for_cuda_device(cfg.exp.device)
 
     # Get output folder number for the experiemnt
@@ -229,4 +211,4 @@ def main(cfg):
     elif cfg.exp.mode == 'test':
         test_model(cfg)
     else:
-        misc(cfg)
+        raise ValueError(f"Unsupported experiment mode: {cfg.exp.mode}. Supported modes are 'train', 'crossval', and 'test'.")

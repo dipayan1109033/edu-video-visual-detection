@@ -38,7 +38,7 @@ def train_torchvisionModel(cfg, model, optimizer, train_loader, val_loader = Non
         else:
             lr_scheduler.step()
 
-        if (epoch+1) % cfg.train.save_interval == 0 and len(fold_tag)==0:
+        if cfg.train.save_interval > 0 and (epoch+1) % cfg.train.save_interval == 0 and len(fold_tag)==0:
             save_model_checkpoint(model, optimizer, epoch+1, loss_dict, save_root_dir, save_filename=f"epoch{epoch+1}.pt")
 
     # Save the trained model

@@ -107,7 +107,7 @@ python src/main.py model.identifier="yolo" model.pretrained_model="yolo11m.pt" e
 
 ## 📈 Results
 
-### 📊 Table 1: AP50% Comparison of Object Detection Models Across Datasets (80%:20% Train-Validation Split)
+#### 📊 Table 1: AP50% Comparison of Object Detection Models Across Datasets (80%:20% Train-Validation Split)
 
 | Model        | LVVO_1k | LDD    | LPM    |
 |--------------|---------|--------|--------|
@@ -121,7 +121,7 @@ python src/main.py model.identifier="yolo" model.pretrained_model="yolo11m.pt" e
 > **Note:** Table 1 reports the numerical results visualized in **Figure 2** of the paper.
 
 
-### 📊 Table 2: Comparison of Logiform and YOLOv11 on Classic Metrics (IoU = 0.5, Mean ± Std)
+#### 📊 Table 2: Comparison of Logiform and YOLOv11 on Classic Metrics (IoU = 0.5, Mean ± Std)
 
 
 | Model     | Precision (%)     | Recall (%)        | F1 Score (%)      |
@@ -132,7 +132,7 @@ python src/main.py model.identifier="yolo" model.pretrained_model="yolo11m.pt" e
 > **Note:** Table 2 reports the numerical results visualized in **Figure 3** of the paper.
 
 
-### 📊 Table 3: Cross-Dataset Performances of YOLOv11 (Mean ± Std, 5-Fold Cross-Validation)
+#### 📊 Table 3: Cross-Dataset Performances of YOLOv11 (Mean ± Std, 5-Fold Cross-Validation)
 
 | Training Dataset | Test on LVVO_1k | Test on LDD     | Test on LPM     |
 |------------------|------------------|------------------|------------------|
@@ -150,7 +150,7 @@ python src/main.py model.identifier="yolo" model.pretrained_model="yolo11m.pt" e
 
 > **Note:** Table 3 reports the numerical results visualized in **Figure 4** of the paper.
 
-### 📊 Table 4: Impact of Auto-Labeling on Model Performance (Mean ± Std, 5-Fold Cross-Validation)
+#### 📊 Table 4: Impact of Auto-Labeling on Model Performance (Mean ± Std, 5-Fold Cross-Validation)
 
 | **Model**           | **AP50 (%)**       | **AP75 (%)**       | **AP (%)**         | **F1 Score (%)**     |
 |---------------------|--------------------|---------------------|---------------------|----------------------|

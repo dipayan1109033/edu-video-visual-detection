@@ -1,6 +1,6 @@
 # Visual Content Detection in Educational Videos
 
-📘 *Conference Paper (To Appear)* • [📝 arXiv Paper]() • [📦 Download Datasets](https://github.com/dipayan1109033/LVVO_dataset) • [📄 LVVO Dataset arXiv Paper]()
+📘 *Conference Paper (To Appear)* • [📝 arXiv Paper]() • [📦 Download Datasets](https://github.com/dipayan1109033/LVVO_dataset) • [📄 LVVO Dataset arXiv Paper](https://doi.org/10.48550/arXiv.2506.13657)
 
 This repository contains the source code for the research paper:  
 **"Visual Content Detection in Educational Videos with Transfer Learning and Dataset Enrichment"**  
